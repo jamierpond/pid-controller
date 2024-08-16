@@ -8,6 +8,7 @@ auto random_up_to(float max) {
   return (((rand() % 100) / 100.0f) - 0.5) * max * 2.0f;
 }
 
+// simulation of a process with noise
 int main() {
   Gain<float> gains = {
     .p = 0.3f,

@@ -13,7 +13,12 @@ struct Response {
 };
 
 template <typename T>
-constexpr Response<T> process_sample(T sensor_input, T setpoint, const Gain<T>& gain, const Errors<T>& e) {
+constexpr Response<T> process_sample(
+    T sensor_input,
+    T setpoint,
+    const Gain<T>& gain,
+    const Errors<T>& e
+  ) {
   auto current_error = setpoint - sensor_input;
   auto cumulative_error = e.cumulative_error + current_error;
 
