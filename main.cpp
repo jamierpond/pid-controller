@@ -1,27 +1,37 @@
 // could be fun to have the cumulative error calculated from a ring buffer
 // with exponential decay to the oldest value
 #include <cstdio>
-#include <cstdlib>
+#include <random>
+#include <type_traits>
 #include "pid.h"
 
-auto random_up_to(float max) {
-  return (((rand() % 100) / 100.0f) - 0.5) * max * 2.0f;
+template<typename T>
+T random_up_to(T max) {
+    static_assert(std::is_arithmetic_v<T>, "T must be an arithmetic type");
+
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+
+    if constexpr (std::is_integral_v<T>) {
+        std::uniform_int_distribution<T> dis(-max, max);
+        return dis(gen);
+    } else {
+        std::uniform_real_distribution<T> dis(-max, max);
+        return dis(gen);
+    }
 }
 
 // simulation of a process with noise
 int main() {
-  Gain<float> gains = {
+  pid::Gain<float> gains = {
     .p = 0.3f,
     .i = 0.1f,
     .d = 0.3f
   };
 
-  Errors<float> errors = {
-    .previous_error = 0,
-    .cumulative_error = 0
-  };
+  pid::Errors<float> errors {};
 
-  auto v = -2.10098f;
+  auto v = -2.10098f; // some initial value
   for (auto counter = 0; counter < 500; counter++) {
     auto [output, e] = process_sample(v, 40.0f, gains, errors);
     errors = e;
@@ -35,7 +45,7 @@ int main() {
       v += random_up_to(50.0f);
     }
 
-    auto simulation_noise = random_up_to(2);
+    auto simulation_noise = random_up_to(2.0);
     v += simulation_noise;
     printf("%f\n", v);
   }

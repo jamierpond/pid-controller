@@ -1,3 +1,7 @@
+#include <span>
+
+namespace pid {
+
 template <typename T> struct Gain {
   T p{}, i{}, d{};
 };
@@ -18,7 +22,7 @@ constexpr Response<T> process_sample(
     T setpoint,
     const Gain<T>& gain,
     const Errors<T>& e
-  ) {
+) {
   auto current_error = setpoint - sensor_input;
   auto cumulative_error = e.cumulative_error + current_error;
 
@@ -32,3 +36,21 @@ constexpr Response<T> process_sample(
   };
 }
 
+
+template <typename T>
+constexpr Errors<T> process_buffer(
+    const std::span<T>& sensor_input,
+    const std::span<T>& setpoint,
+    const std::span<Gain<T>>& output_buffer,
+    const Gain<T>& gain,
+    const Errors<T>& last_errors
+  ) {
+  for (auto i = 0; i < sensor_input.size(); i++) {
+    auto [output, errors] = process_sample(sensor_input[i], setpoint[i], gain, last_errors);
+    last_errors = errors;
+    output_buffer[i] = output;
+  }
+  return last_errors;
+}
+
+} // namespace pid
