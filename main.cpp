@@ -5,6 +5,7 @@
 #include <random>
 #include <type_traits>
 #include "ring_buffer.h"
+#include "tests/ring_buffer.tests.h"
 
 template <typename T> T random_up_to(T max) {
   static_assert(std::is_arithmetic_v<T>, "T must be an arithmetic type");
@@ -32,7 +33,7 @@ int main() {
   printf("%f\n", v);
 
   // add in some delay to the system! make it work harder!
-  auto rb = RingBuffer<float, int, 16>{};
+  auto rb = RingBuffer<float, 16>{};
   rb.delay_samples = 4;
 
   for (auto counter = 0; counter < 500; counter++) {

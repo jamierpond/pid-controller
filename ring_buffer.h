@@ -1,8 +1,10 @@
 #pragma once
 #include <array>
+#include <cstdint>
 #include <type_traits>
 
-template <typename T> constexpr bool is_power_of_two(T value) {
+template <typename T>
+constexpr bool is_power_of_two(T value) {
   static_assert(std::is_integral_v<T>, "T must be an integral type");
   return value && !(value & (value - 1));
 }
@@ -12,8 +14,11 @@ constexpr auto modulo(auto dividend) {
   return dividend & (Divisor - 1);
 }
 
-template <typename T, typename CountType, CountType Size> struct RingBuffer {
+template <typename T, auto Size, typename CountType = std::int32_t>
+struct RingBuffer {
   static_assert(is_power_of_two(Size), "Size must be a power of two");
+  static_assert(std::is_integral_v<CountType>, "CountType must be an integral type");
+  static_assert(std::is_signed_v<CountType>, "CountType must be a signed type");
 
   constexpr void write(T value) {
     buffer[write_pointer] = value;
@@ -34,4 +39,7 @@ template <typename T, typename CountType, CountType Size> struct RingBuffer {
   std::array<T, Size> buffer{};
 };
 
+#ifdef STATIC_TESTS
+#include "tests/ring_buffer.tests.h"
+#endif
 

@@ -1,8 +1,6 @@
 #pragma once
 #include "../ring_buffer.h"
 
-// Tests ======================================================================
-
 static_assert(modulo<8>(0) == 0);
 static_assert(modulo<8>(1) == 1);
 static_assert(modulo<8>(6) == 6);
@@ -25,7 +23,7 @@ static_assert([] {
 }());
 
 static_assert([] {
-  RingBuffer<int, int, 8> rb{};
+  RingBuffer<int, 8> rb{};
   { /* buffer is empty */
     auto expected_buffer = std::array<int, 8>{0, 0, 0, 0, 0, 0, 0, 0};
     if (expected_buffer != rb.buffer) {
