@@ -1,2 +1,5 @@
 /build
 .cache
+
+./data.txt
+./data_plot.png
