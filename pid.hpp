@@ -21,7 +21,7 @@ constexpr Response<T> process_sample(
     T setpoint,
     const Gain<T>& gain,
     const Errors<T>& e,
-    const T cumulative_error_backoff_coeff = 1.0f
+    const T cumulative_error_backoff_coeff = T{1.0}
 ) {
   auto current_error = setpoint - sensor_input;
   auto cumulative_error = e.cumulative_error + current_error;
