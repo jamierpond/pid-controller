@@ -1,4 +1,5 @@
 #pragma once
+#include "static_test_utils.hpp"
 #include "../ring_buffer.h"
 
 static_assert(modulo<8>(0) == 0);
@@ -13,55 +14,45 @@ static_assert(is_power_of_two(16));
 static_assert(is_power_of_two(32));
 static_assert(!is_power_of_two(31));
 
-static_assert([] {
-  for (auto i = 0; i < 31; i++) {
-    if (!is_power_of_two(1 << i)) {
-      return false;
-    }
-  }
+STATIC_TEST([] {
+  EXPECT(modulo<8>(0) == 0);
   return true;
-}());
+});
 
 static_assert([] {
   RingBuffer<int, 8> rb{};
   { /* buffer is empty */
     auto expected_buffer = std::array<int, 8>{0, 0, 0, 0, 0, 0, 0, 0};
-    if (expected_buffer != rb.buffer) {
-      return false;
-    }
+    EXPECT(rb.buffer == expected_buffer);
   }
 
   { /* write a one */
     auto expected_buffer = std::array<int, 8>{1, 0, 0, 0, 0, 0, 0, 0};
     rb.write(1);
-    if (expected_buffer != rb.buffer) {
-      return false;
-    }
+    EXPECT(rb.buffer == expected_buffer);
   }
 
   { /* write a two */
     auto expected_buffer = std::array<int, 8>{1, 2, 0, 0, 0, 0, 0, 0};
     rb.write(2);
-    if (expected_buffer != rb.buffer) {
-      return false;
-    }
+    EXPECT(rb.buffer == expected_buffer);
   }
 
   { /* set the delay to 2 and read some values */
     rb.delay_samples = 2;
-    if (rb.read() != 0) { return false; }
-    if (rb.read() != 0) { return false; }
-    if (rb.read() != 1) { return false; }
-    if (rb.read() != 2) { return false; }
+    EXPECT(rb.read() == 0);
+    EXPECT(rb.read() == 0);
+    EXPECT(rb.read() == 1);
+    EXPECT(rb.read() == 2);
 
     rb.write(3);
     rb.write(4);
     rb.delay_samples = 4;
 
-    if (rb.read() != 0) { return false; }
-    if (rb.read() != 0) { return false; }
-    if (rb.read() != 3) { return false; }
-    if (rb.read() != 4) { return false; }
+    EXPECT(rb.read() == 0);
+    EXPECT(rb.read() == 0);
+    EXPECT(rb.read() == 3);
+    EXPECT(rb.read() == 4);
   }
 
   return true;
