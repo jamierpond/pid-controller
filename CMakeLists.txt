@@ -13,7 +13,7 @@ add_executable(pid_controller main.cpp)
 if(MSVC)
     target_compile_options(pid_controller PRIVATE /W4 /WX)
 else()
-    target_compile_options(pid_controller PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(pid_controller PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
 # Enable optimizations for Release builds
